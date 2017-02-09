@@ -1,104 +1,123 @@
 <!DOCTYPE html>
 <!--The html portion uses bootstrap to set up a text box and a button-->
 <html>
-    <meta name="viewport" content="width=device-width, user-scalable=no">
-    <head>
-        <title>Smart Safe</title>
-        <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Smart Safe</h1>
-            <div class="col">
-                <div class="row-md-4">
-                    <textarea class="form-control" style="background:#222; color:#00ff00;" rows="8" id="inData"></textarea>
-                </div>
-                <div class="row-md-4">
-                    <form action="">
-                        <input type="button" class="btn btn-primary btn-lg btn-block" id="open" value="OPEN" style="color:white" onclick="buttonSend(this);">
-                    </form>
-                </div>
+<meta name="viewport" content="width=device-width, user-scalable=no">
+
+<head>
+    <title>Smart Safe</title>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Smart Safe</h1>
+        <div class="col">
+            <div class="row-md-4">
+                <textarea class="form-control" style="background:#222; color:#00ff00;" rows="8" id="inData"></textarea>
+            </div>
+            <div class="row-md-4">
+                <form action="">
+                    <input type="button" class="btn btn-primary btn-lg btn-block" id="open" value="OPEN" style="color:white" onclick="buttonSend(this);">
+                </form>
             </div>
         </div>
-        <script>
-            // open the web socket
-            var socket = io.connect(document.location.href);
-            var myId;
+    </div>
+    <script>
+        // open the web socket
+        var socket = io.connect(document.location.href);
+        var myId;
 
-            // the input from the sensors on the arduino will send a unique id to node
-            // through serialport
-            // a switch statement determines the output to the text area
-            // real date and time are used
-            socket.on('update slider', function (data) {
-                console.log("update slider: " + data.value);
-                var dt = new Date();
-                var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
-                switch(data.value) {
-                    case 0:
-                        $("#inData").append("Nick entered the safe at " + time + "\r");
-                        $("#inData").animate({scrollTop: $("#inData")[0].scrollHeight - $("#inData").height()}, 200);
-                        break;
-                    case 1:
-                        $("#inData").append("Tom entered the safe at " + time + "\r");
-                        $("#inData").animate({scrollTop: $("#inData")[0].scrollHeight - $("#inData").height()}, 200);
-                        break;
-                    case 2:
-                        $("#inData").append("Successful keypad entry to the safe at " + time + "\r");
-                        $("#inData").animate({scrollTop: $("#inData")[0].scrollHeight - $("#inData").height()}, 200);
-                        break;
-                    case 3:
-                        $("#inData").append("Failed keypad entry to the safe at " + time + "\r");
-                        $("#inData").animate({scrollTop: $("#inData")[0].scrollHeight - $("#inData").height()}, 200);
-                        break;
-                    case 4:
-                        $("#inData").append("Failed fingerprint entry to the safe at " + time + "\r");
-                        $("#inData").animate({scrollTop: $("#inData")[0].scrollHeight - $("#inData").height()}, 200);
-                        break;
-                    case 5:
-                        $("#inData").append("Safe locked at " + time + "\r");
-                        $("#inData").animate({scrollTop: $("#inData")[0].scrollHeight - $("#inData").height()}, 200);
-                        break;
-                }
-            });
-
-            // web sockets allow two way communication from node to the client
-            socket.on('on connection', function (data) {
-                console.log("on connection: " + data.client);
-                console.log("Number of client connected: " + data.clientCount);
-            });
-
-            socket.on('on disconnect',function(data) {
-                console.log("on disconnect: " + data.client);
-                console.log("Number of client connected: " + data.clientCount);
-            });
-
-            socket.on('your id',function(data) {
-                console.log("your id: " + data.id);
-                myId = data.id;
-            });
-
-            socket.on('ack button status', function (data) {
-                console.log("status: " + data.status);
-                if(myId==data.by) {
-                    console.log("by YOU");
-                } else {
-                    console.log("by: " + data.by);
-                }
-            });
-
-            // sending the button event to node
-            // updating the text area
-            function buttonSend(button) {
-                var dt = new Date();
-                var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
-                socket.emit('button update event', { status: 'OPEN' });
-                setTimeout(function() {
-                    $("#inData").append("Safe opened from the web at " + time + "\r");
-                    $("#inData").animate({scrollTop: $("#inData")[0].scrollHeight - $("#inData").height()}, 200);
-                }, 6000);
+        // the input from the sensors on the arduino will send a unique id to node
+        // through serialport
+        // a switch statement determines the output to the text area
+        // real date and time are used
+        socket.on('update slider', function(data) {
+            console.log("update slider: " + data.value);
+            var dt = new Date();
+            var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+            switch (data.value) {
+                case 0:
+                    $("#inData").append("Nick entered the safe at " + time + "\r");
+                    $("#inData").animate({
+                        scrollTop: $("#inData")[0].scrollHeight - $("#inData").height()
+                    }, 200);
+                    break;
+                case 1:
+                    $("#inData").append("Tom entered the safe at " + time + "\r");
+                    $("#inData").animate({
+                        scrollTop: $("#inData")[0].scrollHeight - $("#inData").height()
+                    }, 200);
+                    break;
+                case 2:
+                    $("#inData").append("Successful keypad entry to the safe at " + time + "\r");
+                    $("#inData").animate({
+                        scrollTop: $("#inData")[0].scrollHeight - $("#inData").height()
+                    }, 200);
+                    break;
+                case 3:
+                    $("#inData").append("Failed keypad entry to the safe at " + time + "\r");
+                    $("#inData").animate({
+                        scrollTop: $("#inData")[0].scrollHeight - $("#inData").height()
+                    }, 200);
+                    break;
+                case 4:
+                    $("#inData").append("Failed fingerprint entry to the safe at " + time + "\r");
+                    $("#inData").animate({
+                        scrollTop: $("#inData")[0].scrollHeight - $("#inData").height()
+                    }, 200);
+                    break;
+                case 5:
+                    $("#inData").append("Safe locked at " + time + "\r");
+                    $("#inData").animate({
+                        scrollTop: $("#inData")[0].scrollHeight - $("#inData").height()
+                    }, 200);
+                    break;
             }
-        </script>
-    </body>
+        });
+
+        // web sockets allow two way communication from node to the client
+        socket.on('on connection', function(data) {
+            console.log("on connection: " + data.client);
+            console.log("Number of client connected: " + data.clientCount);
+        });
+
+        socket.on('on disconnect', function(data) {
+            console.log("on disconnect: " + data.client);
+            console.log("Number of client connected: " + data.clientCount);
+        });
+
+        socket.on('your id', function(data) {
+            console.log("your id: " + data.id);
+            myId = data.id;
+        });
+
+        socket.on('ack button status', function(data) {
+            console.log("status: " + data.status);
+            if (myId == data.by) {
+                console.log("by YOU");
+            } else {
+                console.log("by: " + data.by);
+            }
+        });
+
+        // sending the button event to node
+        // updating the text area
+        function buttonSend(button) {
+            var dt = new Date();
+            var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+            socket.emit('button update event', {
+                status: 'OPEN'
+            });
+            setTimeout(function() {
+                $("#inData").append("Safe opened from the web at " + time + "\r");
+                $("#inData").animate({
+                    scrollTop: $("#inData")[0].scrollHeight - $("#inData").height()
+                }, 200);
+            }, 6000);
+        }
+    </script>
+</body>
+
 </html>
