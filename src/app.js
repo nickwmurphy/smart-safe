@@ -10,42 +10,42 @@ var commonColor = 0xffffff;
 var commonSldValue = -1;
 
 // init for SerialPort connected to Arduino
-var SerialPort = sp
-var serialPort = new SerialPort('/dev/cu.usbmodem1411', {
-    baudrate: 9600,
-    dataBits: 8,
-    parity: 'none',
-    stopBits: 1,
-    flowControl: false
-});
-
-var receivedData = "";
-
-serialPort.on("open", function() {
-    console.log('serialPort open');
-    serialPort.write("OPEN\n");
-
-    //handle data received from the Arduino
-    serialPort.on('data', function(data) {
-        receivedData += data.toString();
-        if (receivedData.indexOf("SLD#") >= 0 && receivedData.indexOf("\n") >= 0) {
-            sldValue = receivedData.substring(receivedData.indexOf("SLD#") + 4, receivedData.indexOf("\n"));
-            receivedData = "";
-            if ((sldValue.length == 1) || (sldValue.length == 2)) {
-                commonSldValue = parseInt("0x" + sldValue);
-                io.sockets.emit('update slider', {
-                    value: commonSldValue
-                });
-                console.log('update slider: ' + commonSldValue);
-            }
-        }
-    });
-});
+// var SerialPort = sp
+// var serialPort = new SerialPort('/dev/cu.usbmodem1411', {
+//     baudrate: 9600,
+//     dataBits: 8,
+//     parity: 'none',
+//     stopBits: 1,
+//     flowControl: false
+// });
+//
+// var receivedData = "";
+//
+// serialPort.on("open", function() {
+//     console.log('serialPort open');
+//     serialPort.write("OPEN\n");
+//
+//     //handle data received from the Arduino
+//     serialPort.on('data', function(data) {
+//         receivedData += data.toString();
+//         if (receivedData.indexOf("SLD#") >= 0 && receivedData.indexOf("\n") >= 0) {
+//             sldValue = receivedData.substring(receivedData.indexOf("SLD#") + 4, receivedData.indexOf("\n"));
+//             receivedData = "";
+//             if ((sldValue.length == 1) || (sldValue.length == 2)) {
+//                 commonSldValue = parseInt("0x" + sldValue);
+//                 io.sockets.emit('update slider', {
+//                     value: commonSldValue
+//                 });
+//                 console.log('update slider: ' + commonSldValue);
+//             }
+//         }
+//     });
+// });
 
 app.listen(3000);
 
 function handler(req, res) {
-    fs.readFile(__dirname + '/index.html', function(err, data) {
+    fs.readFile('public/index.html', function(err, data) {
         if (err) {
             res.writeHead(500);
             return res.end('Error loading index.html');
