@@ -1,8 +1,20 @@
-var app = require('http').createServer(handler),
-    io = require('socket.io').listen(app),
-    fs = require('fs'),
-    //os = require('os'),
-    sp = require("serialport");
+var sp = require("serialport"),
+    express = require('express'),
+    app = express(),
+    socket = require('socket.io'),
+    path = require('path')
+    server = app.listen(process.env.PORT || 3000);
+    io = socket.listen(server);
+
+app.use(express.static(__dirname + '/public'));
+
+//views is directory for all template files
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+
+app.get('/', function(request, response) {
+  response.render('pages/index');
+});
 
 //All clients have a common status
 var commonStatus = 'OPEN';
@@ -42,10 +54,9 @@ serialPort.on("open", function() {
     });
 });
 
-app.listen(3000);
 
 function handler(req, res) {
-    fs.readFile('public/index.html', function(err, data) {
+    fs.readFile('/public/index.html', '/public/main.js' function(err, data) {
         if (err) {
             res.writeHead(500);
             return res.end('Error loading index.html');
