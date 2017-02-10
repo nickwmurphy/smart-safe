@@ -16,3 +16,6 @@ npm-debug.log
 
 # sass
 *.css.map
+
+#arduino-libraries
+libs
