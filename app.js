@@ -2,7 +2,7 @@ var SerialPort = require("serialport"),
     express = require('express'),
     app = express(),
     socket = require('socket.io'),
-    server = app.listen(process.env.PORT || 8080),
+    server = app.listen(process.env.PORT || 3000),
     io = socket.listen(server);
 
 
