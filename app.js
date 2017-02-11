@@ -46,6 +46,10 @@ io.on('connection', (socket) => {
         console.log('web socket open');
     });
 
+    socket.on('click', function(data) {
+      console.log('click');
+    });
+
     // socket.emit('update slider', {
     //     value: commonSldValue
     // });
