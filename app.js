@@ -1,22 +1,12 @@
-var SerialPort = require("serialport"),
+var SerialPort = require('serialport'),
     express = require('express'),
     app = express(),
     socket = require('socket.io'),
     server = app.listen(process.env.PORT || 3000),
     io = socket.listen(server);
 
-
-//express
 app.use(express.static(__dirname + '/public'));
-app.use('/stylesheets', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
-
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-
-app.get('/', function(request, response) {
-    response.render('pages/index');
-});
-
+app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 
 // //serialport
 // var port = new SerialPort('/dev/cu.usbmodem1411');
