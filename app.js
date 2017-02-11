@@ -1,107 +1,66 @@
-var sp = require("serialport"),
+var SerialPort = require("serialport"),
     express = require('express'),
     app = express(),
     socket = require('socket.io'),
-    path = require('path')
-    server = app.listen(process.env.PORT || 3000);
+    server = app.listen(3000),
     io = socket.listen(server);
 
-app.use(express.static(__dirname + '/public'));
 
-//views is directory for all template files
+//express
+app.use(express.static(__dirname + '/public'));
+app.use('/stylesheets', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
+
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
 app.get('/', function(request, response) {
-  response.render('pages/index');
-});
-
-//All clients have a common status
-var commonStatus = 'OPEN';
-var commonColor = 0xffffff;
-var commonSldValue = -1;
-
-// init for SerialPort connected to Arduino
-var SerialPort = sp
-var serialPort = new SerialPort('/dev/cu.usbmodem1411', {
-    baudrate: 9600,
-    dataBits: 8,
-    parity: 'none',
-    stopBits: 1,
-    flowControl: false
-});
-
-var receivedData = "";
-
-serialPort.on("open", function() {
-    console.log('serialPort open');
-    serialPort.write("OPEN\n");
-
-    //handle data received from the Arduino
-    serialPort.on('data', function(data) {
-        receivedData += data.toString();
-        if (receivedData.indexOf("SLD#") >= 0 && receivedData.indexOf("\n") >= 0) {
-            sldValue = receivedData.substring(receivedData.indexOf("SLD#") + 4, receivedData.indexOf("\n"));
-            receivedData = "";
-            if ((sldValue.length == 1) || (sldValue.length == 2)) {
-                commonSldValue = parseInt("0x" + sldValue);
-                io.sockets.emit('update slider', {
-                    value: commonSldValue
-                });
-                console.log('update slider: ' + commonSldValue);
-            }
-        }
-    });
+    response.render('pages/index');
 });
 
 
-function handler(req, res) {
-    fs.readFile('/public/index.html', '/public/main.js' function(err, data) {
-        if (err) {
-            res.writeHead(500);
-            return res.end('Error loading index.html');
-        }
-        res.writeHead(200);
-        res.end(data);
-    });
-}
+// //serialport
+// var port = new SerialPort('/dev/cu.usbmodem1411');
+// var commonSldValue = -1;
+//
+// port.on('open', function() {
+//     port.write('serialport open\n', function(err) {
+//         if (err) {
+//             return console.log('Error: ', err.message);
+//         }
+//         console.log('serialport open');
+//     });
+//
+//     //handle data received from the Arduino
+//     port.on('data', function(data) {
+//         var receivedData = data.toString();
+//         if (receivedData.indexOf("SLD#") >= 0 && receivedData.indexOf("\n") >= 0) {
+//             sldValue = receivedData.substring(receivedData.indexOf("SLD#") + 4,
+//                 receivedData.indexOf("\n"));
+//             receivedData = "";
+//             if ((sldValue.length == 1) || (sldValue.length == 2)) {
+//                 commonSldValue = parseInt("0x" + sldValue);
+//                 io.sockets.emit('update slider', {
+//                     value: commonSldValue
+//                 });
+//                 console.log('update slider: ' + commonSldValue);
+//             }
+//         }
+//     });
+// });
 
-io.sockets.on('connection', function(socket) {
-    //Send client with his socket id
-    socket.emit('your id', {
-        id: socket.id
+
+//socket.io
+io.on('connection', (socket) => {
+    socket.emit('app connected');
+    socket.on('client connected', function(data) {
+        console.log('web socket open');
     });
-    //Info all clients a new client caaonnected
-    io.sockets.emit('on connection', {
-        client: socket.id,
-        clientCount: io.sockets.clients().length
-    });
-    //Set the current common status to the new client
-    socket.emit('ack button status', {
-        status: commonStatus
-    });
-    socket.emit('update slider', {
-        value: commonSldValue
-    });
-    socket.on('button update event', function(data) {
-        console.log(data.status);
-        //acknowledge with inverted status,
-        //to toggle button text in client
-        if (data.status == 'OPEN') {
-            console.log("OPEN");
-            commonStatus = 'OPEN';
-            serialPort.write("OPEN\n");
-        }
-        io.sockets.emit('ack button status', {
-            status: commonStatus,
-            by: socket.id
-        });
-    });
-    //Info all clients if this client disconnect
+
+    // socket.emit('update slider', {
+    //     value: commonSldValue
+    // });
+
     socket.on('disconnect', function() {
-        io.sockets.emit('on disconnect', {
-            client: socket.id,
-            clientCount: io.sockets.clients().length - 1
-        });
+      console.log('web socket closed');
     });
 });

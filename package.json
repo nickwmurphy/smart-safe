@@ -1,20 +1,26 @@
 {
-  "name": "smartsafe",
-  "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
-  "scripts": {
-    "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nickwmurphy/smartsafe.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/nickwmurphy/smartsafe/issues"
-  },
-  "homepage": "https://github.com/nickwmurphy/smartsafe#readme"
+    "name": "smartsafe",
+    "version": "1.0.0",
+    "description": "IoT Safe using Arduino",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nickwmurphy/smartsafe.git"
+    },
+    "dependencies": {
+        "bootstrap": "3.3.7",
+        "ejs": "2.5.5",
+        "express": "4.13.3",
+        "serialport": "4.0.7",
+        "socket.io": "1.4.7"
+    },
+    "author": "Nick Murphy",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/nickwmurphy/smartsafe/issues"
+    },
+    "homepage": "https://github.com/nickwmurphy/smartsafe#readme"
 }

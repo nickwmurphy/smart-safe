@@ -1,8 +1,12 @@
+.container {
+    margin-top: 30px;
+}
+
 #terminal {
-  background: #222;
-  color: #00ff00; }
+    background: #222;
+    color: #00ff00;
+}
 
 #open {
-  color: #fff; }
-
-/*# sourceMappingURL=main.css.map */
+    color: #fff;
+}
