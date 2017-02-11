@@ -3,10 +3,11 @@ var SerialPort = require('serialport'),
     app = express(),
     socket = require('socket.io'),
     server = app.listen(process.env.PORT || 3000),
-    io = socket.listen(server);
+    io = socket.listen(server, { path: '/js/socket.io' });
 
 app.use(express.static(__dirname + '/public'));
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
+//app.use('/js', express.static(__dirname + '/node_modules/socket.io-client/socket.io.js'));
 
 // //serialport
 // var port = new SerialPort('/dev/cu.usbmodem1411');
@@ -51,6 +52,6 @@ io.on('connection', (socket) => {
     // });
 
     socket.on('disconnect', function() {
-      console.log('web socket closed');
+        console.log('web socket closed');
     });
 });
