@@ -1,6 +1,4 @@
-var socket = io.connect('localhost:3000', {
-  path: '/js/socket.io'
-});
+var socket = io.connect();
 
 var notFirstMessage = false;
 
