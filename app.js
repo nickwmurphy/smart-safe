@@ -1,9 +1,11 @@
-var SerialPort = require('serialport'),
-    express = require('express'),
-    app = express(),
-    socket = require('socket.io'),
-    server = app.listen(process.env.PORT || 3000),
-    io = socket.listen(server);
+'use strict';
+
+const SerialPort = require('serialport');
+const express = require('express');
+const app = express();
+const socket = require('socket.io');
+const server = app.listen(process.env.PORT || 3000);
+const io = socket.listen(server);
 
 app.use(express.static(__dirname + '/public'));
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));

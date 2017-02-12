@@ -1,6 +1,6 @@
-var socket = io.connect();
+'use strict';
 
-var notFirstMessage = false;
+const socket = io.connect();
 
 socket.on('app connected', function(data) {
     socket.emit('client connected');
@@ -18,7 +18,7 @@ socket.on('update slider', function(data) {
     }
 });
 
-function addMessage(index) {
+const addMessage = index => {
     const terminal = document.getElementById('terminal');
     const messages = ["Nick entered the safe at ",
         "Tom entered the safe at ",
@@ -28,37 +28,32 @@ function addMessage(index) {
         "Safe locked at ",
         "Safe opened from the web at "
     ];
-    var date = new Date(),
-        time = formatAMPM(date),
-        message;
-    if (notFirstMessage) {
-        message = document.createTextNode("\n" + messages[index] + time);
-    } else {
-        message = document.createTextNode(messages[index] + time);
-        notFirstMessage = true;
-    }
+    let date = new Date(),
+        time = formattedTime(date),
+        message = messages[index] + time,
+        firstMessage = terminal.childNodes.length < 1;
+    !firstMessage ? message = document.createTextNode(`\n${message}`) :
+        message = document.createTextNode(message);
     terminal.appendChild(message);
     terminal.scrollTop += terminal.scrollHeight;
     socket.emit('click');
 }
 
-function formatAMPM(date) {
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    var seconds = date.getSeconds();
-    var am_pm = hours >= 12 ? 'PM' : 'AM';
+let formattedTime = date => {
+    let hours = date.getHours(),
+        minutes = date.getMinutes(),
+        seconds = date.getSeconds(),
+        am_pm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
     hours = hours ? hours : 12;
     hours = hours < 10 ? '0' + hours : hours;
     minutes = minutes < 10 ? '0' + minutes : minutes;
     seconds = seconds < 10 ? '0' + seconds : seconds;
-    var time = hours + ':' + minutes + ':' + seconds + ' ' + am_pm;
+    let time = hours + ':' + minutes + ':' + seconds + ' ' + am_pm;
     return time;
 }
 
 window.onload = function() {
     const open = document.getElementById('open');
-    open.addEventListener('click', function() {
-        addMessage(6);
-    });
+    open.addEventListener('click', () => addMessage(6));
 }
